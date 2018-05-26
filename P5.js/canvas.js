@@ -1,26 +1,72 @@
-let snake = new Snake(10, 11, 10);
-let pause = true;
+let pause;
+let snake;
+let food = []
+let pauseButton
+
+function reset() {
+    pause = true;
+    snake = new Snake();    
+    snake.grow();
+    snake.grow();
+    snake.grow();
+    frameRate(5)
+    food = [floor(random(0, 49)), floor(random(0, 49))]
+    console.log(food);
+    
+}
 
 function setup () {
     stroke(0)
     let cvs = createCanvas(500, 500);
-    let pauseButton = createButton('TOOGLE')
+    pauseButton = createButton('TOOGLE')
     pauseButton.mouseClicked(() => pause = !pause);
+    
+    reset();
+    
 }
 
+
 function draw () {
-
-    for (let i = 0; i < 500; i++) {
-        for (let j = 0; j < 500; j++) {
-            rect(i * 10,j * 10, 10, 10);
-        }   
+    clear();
+    background('#333')
+    
+    if (snake.eat(food)) {
+        food = [floor(random(0, 49)), floor(random(0, 49))]
+        snake.grow();    
     }
 
-    if (!pause){
-        clear()
+    if (!snake.dead) {
         
+        if (!pause){
+            snake.move();
+        }
+        push()
+        fill('#ff0033')
+        rect(food[0] * 10, food[1] * 10, 10, 10)
+        pop()
         snake.show();
-        snake.move(-0.1, 0);    
+            
+    } else 
+        reset();
+
+}
+
+
+function keyPressed() {
+    if (keyCode === UP_ARROW || keyCode === 87 || keyCode === 119){
+        console.log("UP")
+        snake.changeDir("UP");
+    }else if (keyCode === DOWN_ARROW || keyCode === 83 || keyCode === 115) {
+        console.log("DOWN")
+        snake.changeDir("DOWN");
+    }else if (keyCode === RIGHT_ARROW || keyCode === 68 || keyCode === 100) {
+        console.log("RIGHT")
+        snake.changeDir("RIGHT");
+    }else if (keyCode === LEFT_ARROW || keyCode === 65 || keyCode === 97) {
+        console.log("LEFT")
+        snake.changeDir("LEFT");
     }
 
+    console.log(snake.tail);
+    // snake.move();
 }
