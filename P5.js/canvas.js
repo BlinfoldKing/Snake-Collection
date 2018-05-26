@@ -10,8 +10,15 @@ function setup () {
 
 function draw () {
 
+    for (let i = 0; i < 500; i++) {
+        for (let j = 0; j < 500; j++) {
+            rect(i * 10,j * 10, 10, 10);
+        }   
+    }
+
     if (!pause){
         clear()
+        
         snake.show();
         snake.move(-0.1, 0);    
     }
