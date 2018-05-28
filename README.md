@@ -9,3 +9,7 @@ well, snake game is some kind of the "hello world" of game developement it's sim
 ## Have anything in mind?
 
 Fell free to ask or complain anything in the issue, fork and add your own favorite implementation
+
+### Future addtion
+
+Maybe i'll add phaser and Unity Engine example
