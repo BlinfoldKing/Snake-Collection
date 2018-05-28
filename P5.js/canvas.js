@@ -4,7 +4,7 @@ let food = []
 let pauseButton
 
 function reset() {
-    pause = true;
+    pause = false;
     snake = new Snake();    
     snake.grow();
     snake.grow();
@@ -18,9 +18,6 @@ function reset() {
 function setup () {
     stroke(0)
     let cvs = createCanvas(500, 500);
-    pauseButton = createButton('TOOGLE')
-    pauseButton.mouseClicked(() => pause = !pause);
-    
     reset();
     
 }
@@ -49,6 +46,15 @@ function draw () {
     } else 
         reset();
 
+
+    if (pause) {
+        push();
+        fill(255);
+        textSize(30)
+        text("PAUSE", 200, 250);
+        pop();
+    }
+
 }
 
 
@@ -65,8 +71,7 @@ function keyPressed() {
     }else if (keyCode === LEFT_ARROW || keyCode === 65 || keyCode === 97) {
         console.log("LEFT")
         snake.changeDir("LEFT");
+    } else if (keyCode === 32) {
+        pause = !pause
     }
-
-    console.log(snake.tail);
-    // snake.move();
 }
