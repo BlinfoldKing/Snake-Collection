@@ -1,6 +1,6 @@
 from enum import Enum
 import pygame as pg 
-
+import random
 class Direction(Enum):
     UP = 1
     DOWN = 2
@@ -40,10 +40,12 @@ class Snake:
         elif self.dir == Direction.LEFT:
             newBody[0] -= 1 
         self.body.append(newBody)
-        print(self.body)
     
     def changeDir(self, dir):
         self.dir = dir
+
+    def eat(self, food):
+        return self.body[0][0] == food[0] and self.body[0][1] == food[1] 
 
 BLACK = (  3,   3,   3)
 WHITE = (255, 255, 255)
@@ -55,23 +57,37 @@ class Game:
     WIDTH = 500
     HEIGHT = 500
     running = True
-
-    def isRunning(self):
-        return self.running
+    food = [0, 0]
 
     def __init__(self):
+        random.seed(1)
         pg.init()
         self.screen = pg.display.set_mode([self.WIDTH, self.HEIGHT])        
         self.snake = Snake()
         self.running = True
+        self.generateFood()
+
+    def generateFood(self):
+        self.food = random.sample(range(0, 50), 2)
+
+    def isRunning(self):
+        return self.running
 
     def Update(self):
         self.snake.move()
+        if self.snake.eat(self.food):
+            self.generateFood()
+            self.snake.grow()
         pg.time.delay(100)
         pg.display.flip()
         
     def Draw(self):
-        self.screen.fill(BLACK)                
+        self.screen.fill(BLACK)       
+        pg.draw.rect(self.screen, RED, [
+            self.food[0] * 10, 
+            self.food[1] * 10, 
+            10, 10
+            ])         
         for s in self.snake.body: 
             pg.draw.rect(self.screen, WHITE, [
                 (s[0] * 10), 
@@ -97,7 +113,6 @@ class Game:
 
 if __name__ == '__main__':
     game = Game()
-    
     running = True
     while game.isRunning:
         game.Update()
