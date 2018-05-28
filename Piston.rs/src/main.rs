@@ -29,8 +29,28 @@ impl Game {
             graphics::clear(Bg, gl)
         });
 
-        self.snake.update();
         self.snake.render(&mut self.gl, arg);
+    }
+    
+    fn update (&mut self) {
+        self.snake.update();        
+    }
+
+     fn pressed (&mut self, button: &Button) {
+
+        let last_dir = self.snake.dir.clone();
+
+        self.snake.dir = match button {
+            &Button::Keyboard(Key::Up) 
+                if last_dir != Direction::DOWN => Direction::UP,
+            &Button::Keyboard(Key::Down) 
+                if last_dir != Direction::UP => Direction::DOWN,
+            &Button::Keyboard(Key::Left) 
+                if last_dir != Direction::RIGHT => Direction::LEFT,
+            &Button::Keyboard(Key::Right) 
+                if last_dir != Direction::LEFT => Direction::RIGHT,
+            _ => last_dir
+        }
     }
 }
 
@@ -70,12 +90,13 @@ impl Snake {
             self.posX -= 1;
         }
         if (self.dir == Direction::UP) {
-            self.posX -= 1;
+            self.posY -= 1;
         }
         if (self.dir == Direction::DOWN) {
             self.posY += 1;
         }
     }
+
 }
 
 
@@ -100,10 +121,20 @@ fn main() {
         }
     };
 
-    let mut events = Events::new(EventSettings::new());
+    let mut events = Events::new(EventSettings::new()).ups(5);
     while let Some(e) = events.next(&mut window) {
         if let Some(r) = e.render_args() {
             game.render(&r);
+        }
+
+        if let Some(u) = e.update_args() {
+            game.update();
+        }
+
+        if let Some(b) = e.button_args() {
+            if b.state == ButtonState::Press {
+                game.pressed(&b.button);
+            }
         }
     }
 }
