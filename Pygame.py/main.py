@@ -17,8 +17,17 @@ class Snake:
         self.grow()
         self.grow()
 
-    def Update(selft):
-        pass
+    def move(self):
+        for i in range(len(self.body) - 1, 0, -1):
+            self.body[i] = self.body[i - 1].copy()
+        if self.dir == Direction.UP:
+            self.body[0][1] -= 1
+        elif self.dir == Direction.DOWN:
+            self.body[0][1] += 1
+        elif self.dir == Direction.RIGHT:
+            self.body[0][0] += 1
+        elif self.dir == Direction.LEFT:
+            self.body[0][0] -= 1
 
     def grow(self):
         newBody = self.body[-1].copy()
@@ -32,6 +41,9 @@ class Snake:
             newBody[0] -= 1 
         self.body.append(newBody)
         print(self.body)
+    
+    def changeDir(self, dir):
+        self.dir = dir
 
 BLACK = (  3,   3,   3)
 WHITE = (255, 255, 255)
@@ -51,13 +63,15 @@ class Game:
         pg.init()
         self.screen = pg.display.set_mode([self.WIDTH, self.HEIGHT])        
         self.snake = Snake()
-        self.screen.fill(BLACK)        
         self.running = True
 
     def Update(self):
+        self.snake.move()
+        pg.time.delay(100)
         pg.display.flip()
         
     def Draw(self):
+        self.screen.fill(BLACK)                
         for s in self.snake.body: 
             pg.draw.rect(self.screen, WHITE, [
                 (s[0] * 10), 
@@ -68,25 +82,16 @@ class Game:
     def getKey(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                pg.quit()
-                # sys.exit()
-            # elif event.type == KEYDOWN:
-            #     if event.key == K_U   # elif event.type == KEYDOWN:
-            #     if event.key == K_UP:
-            #         snake.point(UP)
-            #     elif event.key == K_DOWN:
-            #         snake.point(DOWN)
-            #     elif event.key == K_LEFT:
-            #         snake.point(LEFT)
-            #     elif event.key == K_RIGHT:
-            #         snake.point(RIGHT)P:
-            #         snake.point(UP)
-            #     elif event.key == K_DOWN:
-            #         snake.point(DOWN)
-            #     elif event.key == K_LEFT:
-            #         snake.point(LEFT)
-            #     elif event.key == K_RIGHT:
-            #         snake.point(RIGHT)
+                self.isRunning = False
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_UP and self.snake.dir != Direction.DOWN:
+                    self.snake.changeDir(Direction.UP)
+                elif event.key == pg.K_DOWN and self.snake.dir != Direction.UP:
+                    self.snake.changeDir(Direction.DOWN)
+                elif event.key == pg.K_LEFT and self.snake.dir != Direction.RIGHT:
+                    self.snake.changeDir(Direction.LEFT)
+                elif event.key == pg.K_RIGHT and self.snake.dir != Direction.LEFT:
+                    self.snake.changeDir(Direction.RIGHT)
 
     
 
