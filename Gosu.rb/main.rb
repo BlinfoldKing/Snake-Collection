@@ -2,34 +2,39 @@ require 'gosu'
 
 include Gosu
 
-#dir symbol
-
 class Snake
 	def initialize
-		@x = 10
-		@y = 10
 		@dir = :right
+		@body = [[10, 10]]
 	end
 
 	def getY
-		return @y
+		return @body[0][1]
 	end
 
 	def getX
-		return @x
+		return @body[0][0]
 	end
 
 	def move!
+		
+		(@body.length - 1).step(1, -1) do |i|
+			puts i - 1
+			@body[i] = @body[i - 1].dup
+		end
+		
 		case @dir
 		when :up
-			@y -= 1
+			@body[0][1] -= 1
 		when :down
-			@y += 1
+			@body[0][1] += 1
 		when :right
-			@x += 1
+			@body[0][0] += 1
 		when :left
-			@x -= 1
+			@body[0][0] -= 1
 		end
+
+
 	end
 
 	def changeDir dir
@@ -37,6 +42,23 @@ class Snake
 	end
 
 	def grow!
+		new_tail = @body.last.dup
+		case @dir
+		when :up
+			new_tail[1] += 1
+		when :down
+			new_tail[1] -= 1
+		when :right
+			new_tail[0] -= 1
+		when :left
+			new_tail[0] += 1
+		end
+
+		@body.push new_tail
+	end
+
+	def getBody
+		return @body
 	end
 end
 
@@ -45,15 +67,21 @@ class Game < Gosu::Window
     	super 500, 500
 		self.caption = "Tutorial Game"
 		@snake = Snake.new
+		@snake.grow!
+		@snake.grow!
+
+		puts @snake.getBody
 	end
 	  
 	def update
-		@snake.move!
+		# @snake.move!
 	end
   
 	def draw
 		draw_rect(0, 0, 500, 500, Color::BLACK)
-		draw_rect(@snake.getX * 10, @snake.getY * 10, 10, 10, Color::WHITE)
+		@snake.getBody.each do |body|
+			draw_rect(body[0] * 10, body[1] * 10, 10, 10, Color::WHITE)
+		end
 	end
 
 	def button_down id
@@ -68,6 +96,7 @@ class Game < Gosu::Window
 		elsif id == KB_LEFT 
 			@snake.changeDir :left 
 		end
+		@snake.move!
 	end
 end
 
