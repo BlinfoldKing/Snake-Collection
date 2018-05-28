@@ -36,6 +36,10 @@ class Snake
 
 	end
 
+	def eat_food? food
+		return @body[0][0] == food[0] && @body[0][1] == food[1] 
+	end
+
 	def changeDir dir
 		@dir = dir
 	end
@@ -75,7 +79,7 @@ class Game < Gosu::Window
 	end
 
 	def initialize
-    	super 500, 500
+    	super 500, 500, false, 100 # update every 100 ms
 		self.caption = "Snake Game"
 		reset!
 	end
@@ -86,14 +90,18 @@ class Game < Gosu::Window
 
 	def update
 		@snake.move!
+		if @snake.eat_food? @food
+			@snake.grow!
+			generateFood!
+		end
 	end
   
 	def draw
 		draw_rect(0, 0, 500, 500, Color::BLACK)
+		draw_rect(@food[0] * 10, @food[1] * 10, 10, 10, Color::RED)		
 		@snake.getBody.each do |body|
 			draw_rect(body[0] * 10, body[1] * 10, 10, 10, Color::WHITE)
 		end
-		draw_rect(@food[0] * 10, @food[1] * 10, 10, 10, Color::RED)
 	end
 
 	def button_down id
