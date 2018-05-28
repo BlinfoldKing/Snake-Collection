@@ -9,7 +9,7 @@ use piston::input::*;
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{ GlGraphics, OpenGL };
 
-
+#[derive(Clone, PartialEq)]
 enum Direction {
     UP, DOWN, LEFT, RIGHT
 }
@@ -29,6 +29,7 @@ impl Game {
             graphics::clear(Bg, gl)
         });
 
+        self.snake.update();
         self.snake.render(&mut self.gl, arg);
     }
 }
@@ -36,7 +37,7 @@ impl Game {
 struct Snake {
     posX: i32,
     posY: i32,
-    dir: Direction    
+    dir: Direction
 }
 
 impl Snake {
@@ -56,11 +57,29 @@ impl Snake {
             graphics::rectangle(COLOR, square, transform, gl);
         })
     }
+
+    fn ChangeDir (&mut self, dir: Direction) {
+
+    }
+
+    fn update (&mut self) {
+        if (self.dir == Direction::RIGHT) {
+            self.posX += 1;
+        }
+        if (self.dir == Direction::LEFT) {
+            self.posX -= 1;
+        }
+        if (self.dir == Direction::UP) {
+            self.posX -= 1;
+        }
+        if (self.dir == Direction::DOWN) {
+            self.posY += 1;
+        }
+    }
 }
 
 
 fn main() {
-    println!("Hello World!");
 
     let opengl = OpenGL::V3_2;
 
@@ -84,7 +103,7 @@ fn main() {
     let mut events = Events::new(EventSettings::new());
     while let Some(e) = events.next(&mut window) {
         if let Some(r) = e.render_args() {
-            game.render(&r)
+            game.render(&r);
         }
     }
 }
