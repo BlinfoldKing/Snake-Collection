@@ -81,6 +81,7 @@ class Snake {
             if ((this.tail[i][0] === this.tail[0][0]
                 && this.tail[i][1] === this.tail[0][1])
                 || this.x > 49 || this.x < 0
+                || this.y > 49 || this.y < 0
             )
                 this.dead = true; 
         }
