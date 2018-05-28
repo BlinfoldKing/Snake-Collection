@@ -47,6 +47,10 @@ class Snake
 		return @dir
 	end
 
+	def isDead?
+		return @body[0][0] < 0 || @body[0][0] > 49 || @body[0][1] < 0 || @body[0][1] > 49 
+	end
+
 	def grow!
 		new_tail = @body.last.dup
 		case @dir
@@ -88,10 +92,17 @@ class Game < Gosu::Window
 	end
 
 	def update
-		@snake.move!
-		if @snake.eat_food? @food
-			@snake.grow!
-			generateFood!
+
+		if @snake.isDead?
+			reset!
+		end
+
+		if !@pause
+			@snake.move!
+			if @snake.eat_food? @food
+				@snake.grow!
+				generateFood!
+			end
 		end
 	end
   
@@ -106,6 +117,8 @@ class Game < Gosu::Window
 	def button_down id
 		if id == KB_ESCAPE
 			close
+		elsif id == KB_SPACE
+			@pause = !@pause
 		elsif id == KB_DOWN
 			@snake.changeDir :down unless @snake.getDir == :up
 		elsif id == KB_UP
