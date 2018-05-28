@@ -19,7 +19,6 @@ class Snake
 	def move!
 		
 		(@body.length - 1).step(1, -1) do |i|
-			puts i - 1
 			@body[i] = @body[i - 1].dup
 		end
 		
@@ -108,13 +107,13 @@ class Game < Gosu::Window
 		if id == KB_ESCAPE
 			close
 		elsif id == KB_DOWN
-			@snake.changeDir :down
+			@snake.changeDir :down unless @snake.getDir == :up
 		elsif id == KB_UP
-			@snake.changeDir :up
+			@snake.changeDir :up unless @snake.getDir == :down
 		elsif id == KB_RIGHT
-			@snake.changeDir :right
+			@snake.changeDir :right unless @snake.getDir == :left
 		elsif id == KB_LEFT 
-			@snake.changeDir :left 
+			@snake.changeDir :left unless @snake.getDir == :right
 		end
 	end
 end
