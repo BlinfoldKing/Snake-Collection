@@ -69,6 +69,8 @@ class Game:
     running = True
     food = [0, 0]
 
+    pause = False
+
     def __init__(self):
         random.seed(1)
         pg.init()
@@ -91,13 +93,13 @@ class Game:
 
         if (self.snake.isDeath()):
             self.reset()
-        
-        self.snake.move()
-        if self.snake.eat(self.food):
-            self.generateFood()
-            self.snake.grow()
-        pg.time.delay(100)
-        pg.display.flip()
+        if not self.pause:        
+            self.snake.move()
+            if self.snake.eat(self.food):
+                self.generateFood()
+                self.snake.grow()
+            pg.time.delay(100)
+            pg.display.flip()
         
     def Draw(self):
         self.screen.fill(BLACK)       
@@ -126,6 +128,8 @@ class Game:
                     self.snake.changeDir(Direction.LEFT)
                 elif event.key == pg.K_RIGHT and self.snake.dir != Direction.LEFT:
                     self.snake.changeDir(Direction.RIGHT)
+                elif event.key == pg.K_SPACE:
+                    self.pause = not self.pause
 
     
 
