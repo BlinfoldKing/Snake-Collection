@@ -8,11 +8,15 @@
   },
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "linux": "electron-packager . snake --platform=linux --arch=x64",
+    "mac": "electron-packager . snake --platform=darwin --arch=x64",
+    "win": "electron-packager . snake --platform=win32 --arch=x64"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^2.0.2"
+    "electron": "^2.0.2",
+    "electron-packager": "^12.1.0"
   }
 }
