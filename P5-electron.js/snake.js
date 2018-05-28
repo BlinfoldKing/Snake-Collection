@@ -9,19 +9,6 @@ class Snake {
 
         this.dead = false;
     }
-
-    
-    getTailDir (idx) {
-        if (idx === 0) {
-            let x = (this.tail[idx][0] - this.x) * -1;
-            let y = (this.tail[idx][1] - this.y) * -1; 
-            return[x, y]
-        } else {
-            let x = (this.tail[idx][0] - this.tail[idx - 1][0]) * -1;
-            let y = (this.tail[idx][1] - this.tail[idx - 1][1]) * -1;
-            return [x, y]
-        }
-    }
     
     changeDir(dir) {
         
