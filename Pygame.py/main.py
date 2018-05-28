@@ -13,9 +13,12 @@ class Snake:
     dir = Direction.RIGHT
 
     def __init__(self):
-        self.body.append([10, 20])
+        self.body = [[10, 20]]
         self.grow()
         self.grow()
+
+    def isDeath(self):
+        return self.body[0][0] < 0 or self.body[0][0] > 49 or self.body[0][1] < 0 or self.body[0][1]  > 49
 
     def move(self):
         for i in range(len(self.body) - 1, 0, -1):
@@ -44,6 +47,13 @@ class Snake:
     def changeDir(self, dir):
         self.dir = dir
 
+    def reset(self):
+        self.body = [[10, 20]]
+        self.grow()
+        self.grow()
+        self.dir = Direction.RIGHT
+        
+
     def eat(self, food):
         return self.body[0][0] == food[0] and self.body[0][1] == food[1] 
 
@@ -64,6 +74,10 @@ class Game:
         pg.init()
         self.screen = pg.display.set_mode([self.WIDTH, self.HEIGHT])        
         self.snake = Snake()
+        self.reset()
+
+    def reset(self):
+        self.snake.reset()
         self.running = True
         self.generateFood()
 
@@ -74,6 +88,10 @@ class Game:
         return self.running
 
     def Update(self):
+
+        if (self.snake.isDeath()):
+            self.reset()
+        
         self.snake.move()
         if self.snake.eat(self.food):
             self.generateFood()
