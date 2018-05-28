@@ -26,10 +26,20 @@ struct Game {
     pause: bool,
     gl: GlGraphics,
     snake: Snake,
-    food: (u32, u32)
+    food: (i32, i32)
 }
 
 impl Game {
+
+    fn reset (&mut self) {
+        self.generateFood();
+        self.snake = Snake {
+            isDead: false,
+            body: LinkedList::from_iter((vec![(10, 10), (10, 11), (10, 12)]).into_iter()),
+            dir: Direction::RIGHT
+        }
+    }
+
     fn render (&mut self, arg: &RenderArgs) {
         use graphics;
 
@@ -63,6 +73,11 @@ impl Game {
     }
 
     fn update (&mut self) {
+        
+        if self.snake.isDead {
+            self.reset();
+        }
+        
         if !self.pause {
             self.snake.update();
         }        
@@ -97,8 +112,9 @@ impl Game {
 }
 
 struct Snake {
-    body: LinkedList<(u32, u32)>,
-    dir: Direction
+    body: LinkedList<(i32, i32)>,
+    dir: Direction,
+    isDead: bool
 }
 
 impl Snake {
@@ -129,26 +145,32 @@ impl Snake {
 
     fn update (&mut self) {
 
-        let mut new_head = (*self.body.front().expect("")).clone();
+        if !self.isDead {
+    
+            let mut new_head = (*self.body.front().expect("")).clone();
 
-        if (self.dir == Direction::RIGHT) {
-            new_head.0 += 1;
-        }
-        if (self.dir == Direction::LEFT) {
-            new_head.0 -= 1;
-        }
-        if (self.dir == Direction::UP) {
-            new_head.1 -= 1;
-        }
-        if (self.dir == Direction::DOWN) {
-            new_head.1 += 1;
+            if (self.dir == Direction::RIGHT) {
+                new_head.0 += 1;
+            }
+            if (self.dir == Direction::LEFT) {
+                new_head.0 -= 1;
+            }
+            if (self.dir == Direction::UP) {
+                new_head.1 -= 1;
+            }
+            if (self.dir == Direction::DOWN) {
+                new_head.1 += 1;
+            }
+
+            self.isDead = new_head.0 < 0 || new_head.0 > 49 || new_head.1 < 0 || new_head.1 > 49; 
+            self.body.push_front(new_head);
+            self.body.pop_back().unwrap();
+
         }
 
-        self.body.push_front(new_head);
-        self.body.pop_back().unwrap();
     }
 
-    fn eat (&mut self, food: (u32, u32)) -> bool{
+    fn eat (&mut self, food: (i32, i32)) -> bool{
         return ((*self.body.front().expect("")).0 == food.0 
         && (*self.body.front().expect("")).1 == food.1) 
     }
@@ -188,6 +210,7 @@ fn main() {
         gl: GlGraphics::new(opengl),
         pause: false,
         snake: Snake {
+            isDead: false,
             body: LinkedList::from_iter((vec![(10, 10), (10, 11), (10, 12)]).into_iter()),
             dir: Direction::RIGHT        
         }
