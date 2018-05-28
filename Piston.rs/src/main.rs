@@ -69,6 +69,7 @@ impl Game {
         
         if (self.snake.eat(self.food)) {
             self.generateFood();
+            self.snake.grow();
         }
     }
 
@@ -152,6 +153,21 @@ impl Snake {
         && (*self.body.front().expect("")).1 == food.1) 
     }
 
+    fn grow (&mut self) {
+        let tail = (*self.body.back().expect("")).clone();
+        self.body.push_back((
+            match self.dir {
+                Direction::LEFT => tail.0 - 1,
+                Direction::RIGHT => tail.0 + 1,
+                _ => tail.0
+            },
+            match self.dir {
+                Direction::UP => tail.1 - 1,
+                Direction::DOWN => tail.1 + 1,
+                _ => tail.1
+            }
+        ))
+    }
 }
 
 
