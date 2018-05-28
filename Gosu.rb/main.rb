@@ -34,11 +34,14 @@ class Snake
 			@body[0][0] -= 1
 		end
 
-
 	end
 
 	def changeDir dir
 		@dir = dir
+	end
+
+	def getDir
+		return @dir
 	end
 
 	def grow!
@@ -63,18 +66,26 @@ class Snake
 end
 
 class Game < Gosu::Window
-	def initialize
-    	super 500, 500
-		self.caption = "Tutorial Game"
+	
+	def reset!
 		@snake = Snake.new
 		@snake.grow!
 		@snake.grow!
-
-		puts @snake.getBody
+		generateFood!
 	end
-	  
+
+	def initialize
+    	super 500, 500
+		self.caption = "Snake Game"
+		reset!
+	end
+	
+	def generateFood!
+		@food = [Random.rand(49), Random.rand(49)]
+	end
+
 	def update
-		# @snake.move!
+		@snake.move!
 	end
   
 	def draw
@@ -82,6 +93,7 @@ class Game < Gosu::Window
 		@snake.getBody.each do |body|
 			draw_rect(body[0] * 10, body[1] * 10, 10, 10, Color::WHITE)
 		end
+		draw_rect(@food[0] * 10, @food[1] * 10, 10, 10, Color::RED)
 	end
 
 	def button_down id
@@ -96,7 +108,6 @@ class Game < Gosu::Window
 		elsif id == KB_LEFT 
 			@snake.changeDir :left 
 		end
-		@snake.move!
 	end
 end
 
