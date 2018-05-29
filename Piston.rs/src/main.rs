@@ -51,8 +51,8 @@ impl Game {
             (self.food.1 * 10) as f64,
             10_f64
         );
-        
-        
+
+
         self.gl.draw(arg.viewport(), |_c, gl| {
             graphics::clear(Bg, gl)
         });
@@ -65,7 +65,7 @@ impl Game {
 
         self.snake.render(&mut self.gl, arg);
     }
-    
+
     fn generateFood (&mut self) {
        let mut r = thread_rng();
        self.food.0 = r.gen_range(0, 50);
@@ -73,16 +73,16 @@ impl Game {
     }
 
     fn update (&mut self) {
-        
+
         if self.snake.isDead {
             self.reset();
         }
-        
+
         if !self.pause {
             self.snake.update();
-        }        
-        
-        if (self.snake.eat(self.food)) {
+        }
+
+        if self.snake.eat(self.food) {
             self.generateFood();
             self.snake.grow();
         }
@@ -95,15 +95,15 @@ impl Game {
         }
 
         let last_dir = self.snake.dir.clone();
-    
+
         self.snake.dir = match button {
-            &Button::Keyboard(Key::Up) 
+            &Button::Keyboard(Key::Up)
                 if last_dir != Direction::DOWN => Direction::UP,
-            &Button::Keyboard(Key::Down) 
+            &Button::Keyboard(Key::Down)
                 if last_dir != Direction::UP => Direction::DOWN,
-            &Button::Keyboard(Key::Left) 
+            &Button::Keyboard(Key::Left)
                 if last_dir != Direction::RIGHT => Direction::LEFT,
-            &Button::Keyboard(Key::Right) 
+            &Button::Keyboard(Key::Right)
                 if last_dir != Direction::LEFT => Direction::RIGHT,
             _ => last_dir
         }
@@ -122,12 +122,12 @@ impl Snake {
         use graphics;
 
         let COLOR: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
-        
+
         let squares: Vec<graphics::types::Rectangle> = self.body
             .iter()
             .map(|&(x, y)| {
                 graphics::rectangle::square(
-                    (x * 10) as f64, 
+                    (x * 10) as f64,
                     (y * 10) as f64,
                     10_f64
                 )
@@ -146,23 +146,39 @@ impl Snake {
     fn update (&mut self) {
 
         if !self.isDead {
-    
+
             let mut new_head = (*self.body.front().expect("")).clone();
 
-            if (self.dir == Direction::RIGHT) {
+            if self.dir == Direction::RIGHT {
                 new_head.0 += 1;
             }
-            if (self.dir == Direction::LEFT) {
+            if self.dir == Direction::LEFT {
                 new_head.0 -= 1;
             }
-            if (self.dir == Direction::UP) {
+            if self.dir == Direction::UP {
                 new_head.1 -= 1;
             }
-            if (self.dir == Direction::DOWN) {
+            if self.dir == Direction::DOWN {
                 new_head.1 += 1;
             }
 
-            self.isDead = new_head.0 < 0 || new_head.0 > 49 || new_head.1 < 0 || new_head.1 > 49; 
+            self.isDead = new_head.0 < 0 || new_head.0 > 49 || new_head.1 < 0 || new_head.1 > 49;
+            
+            let mut iter = self.body.clone().into_iter();
+            iter.next();
+            loop {
+                match iter.next() {
+                    Some(x) => {
+                        if x.0 == self.body.front().expect("").0 && x.1 == self.body.front().expect("").1 {
+                            self.isDead = true;
+                        }
+                    },
+                    None => break,
+                }
+            }
+            
+            println!("{}", self.isDead);
+            
             self.body.push_front(new_head);
             self.body.pop_back().unwrap();
 
@@ -171,8 +187,8 @@ impl Snake {
     }
 
     fn eat (&mut self, food: (i32, i32)) -> bool{
-        return ((*self.body.front().expect("")).0 == food.0 
-        && (*self.body.front().expect("")).1 == food.1) 
+        return ((*self.body.front().expect("")).0 == food.0
+        && (*self.body.front().expect("")).1 == food.1)
     }
 
     fn grow (&mut self) {
@@ -212,7 +228,7 @@ fn main() {
         snake: Snake {
             isDead: false,
             body: LinkedList::from_iter((vec![(10, 10), (10, 11), (10, 12)]).into_iter()),
-            dir: Direction::RIGHT        
+            dir: Direction::RIGHT
         }
     };
 
@@ -232,5 +248,5 @@ fn main() {
             }
         }
     }
-    
+
 }
