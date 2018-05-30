@@ -32,10 +32,11 @@ struct Game {
 impl Game {
 
     fn reset (&mut self) {
-        self.generateFood();
+
+        self.generate_food();
         self.snake = Snake {
-            isDead: false,
-            body: LinkedList::from_iter((vec![(10, 10), (10, 11), (10, 12)]).into_iter()),
+            is_dead: false,
+            body: LinkedList::from_iter((vec![(10, 10), (9, 10), (8, 10)]).into_iter()),
             dir: Direction::RIGHT
         }
     }
@@ -43,7 +44,7 @@ impl Game {
     fn render (&mut self, arg: &RenderArgs) {
         use graphics;
 
-        let Bg: [f32; 4] = [0.1, 0.1, 0.1, 1.0];
+        let bg: [f32; 4] = [0.1, 0.1, 0.1, 1.0];
 
         let foor_clr: [f32; 4] = [1.0, 0.0, 0.3, 1.0];
         let food = graphics::rectangle::square(
@@ -54,7 +55,7 @@ impl Game {
 
 
         self.gl.draw(arg.viewport(), |_c, gl| {
-            graphics::clear(Bg, gl)
+            graphics::clear(bg, gl)
         });
 
         self.gl.draw(arg.viewport(), |_c, gl| {
@@ -66,7 +67,7 @@ impl Game {
         self.snake.render(&mut self.gl, arg);
     }
 
-    fn generateFood (&mut self) {
+    fn generate_food (&mut self) {
        let mut r = thread_rng();
        self.food.0 = r.gen_range(0, 50);
        self.food.1 = r.gen_range(0, 50);
@@ -74,7 +75,7 @@ impl Game {
 
     fn update (&mut self) {
 
-        if self.snake.isDead {
+        if self.snake.is_dead {
             self.reset();
         }
 
@@ -83,14 +84,14 @@ impl Game {
         }
 
         if self.snake.eat(self.food) {
-            self.generateFood();
+            self.generate_food();
             self.snake.grow();
         }
     }
 
     fn pressed (&mut self, button: &Button) {
 
-        if (button == &Button::Keyboard(Key::Space)) {
+        if button == &Button::Keyboard(Key::Space) {
             self.pause = !self.pause;
         }
 
@@ -114,14 +115,14 @@ impl Game {
 struct Snake {
     body: LinkedList<(i32, i32)>,
     dir: Direction,
-    isDead: bool
+    is_dead: bool
 }
 
 impl Snake {
     fn render (&self, gl: &mut GlGraphics, args: &RenderArgs) {
         use graphics;
 
-        let COLOR: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
+        let color: [f32; 4] = [0.9, 0.9, 0.9, 1.0];
 
         let squares: Vec<graphics::types::Rectangle> = self.body
             .iter()
@@ -139,13 +140,13 @@ impl Snake {
             squares
                 .into_iter()
                 .for_each(|square|
-                    graphics::rectangle(COLOR, square, transform, gl));
+                    graphics::rectangle(color, square, transform, gl));
         })
     }
 
     fn update (&mut self) {
 
-        if !self.isDead {
+        if !self.is_dead {
 
             let mut new_head = (*self.body.front().expect("")).clone();
 
@@ -162,33 +163,34 @@ impl Snake {
                 new_head.1 += 1;
             }
 
-            self.isDead = new_head.0 < 0 || new_head.0 > 49 || new_head.1 < 0 || new_head.1 > 49;
-            
+            self.is_dead = new_head.0 < 0 || new_head.0 > 49 || new_head.1 < 0 || new_head.1 > 49;
+            self.body.push_front(new_head);
+            self.body.pop_back().unwrap();
+
             let mut iter = self.body.clone().into_iter();
             iter.next();
             loop {
                 match iter.next() {
                     Some(x) => {
                         if x.0 == self.body.front().expect("").0 && x.1 == self.body.front().expect("").1 {
-                            self.isDead = true;
+                            self.is_dead = true;
                         }
                     },
                     None => break,
                 }
             }
-            
-            println!("{}", self.isDead);
-            
-            self.body.push_front(new_head);
-            self.body.pop_back().unwrap();
+
+            println!("{}", self.is_dead);
+
+
 
         }
 
     }
 
     fn eat (&mut self, food: (i32, i32)) -> bool{
-        return ((*self.body.front().expect("")).0 == food.0
-        && (*self.body.front().expect("")).1 == food.1)
+        return (*self.body.front().expect("")).0 == food.0
+        && (*self.body.front().expect("")).1 == food.1
     }
 
     fn grow (&mut self) {
@@ -226,7 +228,7 @@ fn main() {
         gl: GlGraphics::new(opengl),
         pause: false,
         snake: Snake {
-            isDead: false,
+            is_dead: false,
             body: LinkedList::from_iter((vec![(10, 10), (10, 11), (10, 12)]).into_iter()),
             dir: Direction::RIGHT
         }
@@ -238,7 +240,7 @@ fn main() {
             game.render(&r);
         }
 
-        if let Some(u) = e.update_args() {
+        if let Some(_u) = e.update_args() {
             game.update();
         }
 
